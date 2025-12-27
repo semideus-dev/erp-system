@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 
 export default function DashboardPage() {
   const router = useRouter();
-  function handleSignOut() {
-    authClient.signOut();
+  async function handleSignOut() {
+    await authClient.signOut();
     router.push("/sign-in");
   }
   return (

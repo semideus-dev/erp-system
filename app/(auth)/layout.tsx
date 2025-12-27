@@ -15,13 +15,18 @@ export default function AuthLayout({
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    authClient.getSession().then((session) => {
-      if (session.data != null) {
-        router.push("/dashboard");
-      } else {
+    authClient
+      .getSession()
+      .then((session) => {
+        if (session.data != null) {
+          router.push("/dashboard");
+        } else {
+          setIsLoading(false);
+        }
+      })
+      .catch(() => {
         setIsLoading(false);
-      }
-    });
+      });
   }, [router]);
 
   if (isLoading) {
