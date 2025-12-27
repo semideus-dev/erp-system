@@ -20,7 +20,7 @@ import { FcGoogle } from "react-icons/fc";
 
 const formSchema = z.object({
   email: z.email(),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
 export default function SignInForm() {
@@ -35,8 +35,8 @@ export default function SignInForm() {
 
   const { isSubmitting } = form.formState;
 
-  function onSubmit(data: z.infer<typeof formSchema>) {
-    authClient.signIn.email(
+  async function onSubmit(data: z.infer<typeof formSchema>) {
+    await authClient.signIn.email(
       { ...data, callbackURL: "/dashboard" },
       {
         onError: (error) => {
@@ -53,24 +53,10 @@ export default function SignInForm() {
   }
 
   async function handleGoogleAuth() {
-    await authClient.signIn.social(
-      {
-        provider: "google",
-        callbackURL: "/dashboard",
-      },
-      {
-        onError: (error) => {
-          toast.error(
-            error.error.message ||
-              "Google authentication is unavailable right now.",
-          );
-        },
-        onSuccess: () => {
-          toast.success("Google authentication successful!");
-          router.push("/dashboard");
-        },
-      },
-    );
+    await authClient.signIn.social({
+      provider: "google",
+      callbackURL: "/dashboard",
+    });
   }
 
   return (
@@ -115,7 +101,11 @@ export default function SignInForm() {
           className="w-full"
           size="lg"
         >
-          {isSubmitting ? <PiSpinnerGapLight /> : "Continue"}
+          {isSubmitting ? (
+            <PiSpinnerGapLight className="animate-spin" />
+          ) : (
+            "Continue"
+          )}
         </Button>
         <Button
           disabled={isSubmitting}

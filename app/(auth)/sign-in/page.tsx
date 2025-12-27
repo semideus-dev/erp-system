@@ -5,17 +5,8 @@ import { heading } from "@/components/providers/font-provider";
 import Link from "next/link";
 import SignInForm from "@/modules/auth/client/sign-in-form";
 import AppHeader from "@/components/app-header";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { authClient } from "@/lib/auth-client";
 
 export default function SignInPage() {
-  const router = useRouter();
-  useEffect(() => {
-    authClient.getSession().then((session) => {
-      if (session.data != null) return router.push("/dashboard");
-    });
-  }, [router]);
   return (
     <div className="flex flex-col items-center justify-between w-full h-full py-4">
       <AppHeader />

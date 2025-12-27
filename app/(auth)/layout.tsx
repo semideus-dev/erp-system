@@ -1,11 +1,36 @@
-import SignInForm from "@/modules/auth/client/sign-in-form";
+"use client";
+
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { PiSpinnerGapLight } from "react-icons/pi";
+import { authClient } from "@/lib/auth-client";
 
 export default function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    authClient.getSession().then((session) => {
+      if (session.data != null) {
+        router.push("/dashboard");
+      } else {
+        setIsLoading(false);
+      }
+    });
+  }, [router]);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen w-full">
+        <PiSpinnerGapLight className="animate-spin text-4xl" />
+      </div>
+    );
+  }
   return (
     <div className="flex p-3 items-center justify-center h-screen overflow-hidden">
       <div className="flex w-full h-full">

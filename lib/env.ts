@@ -1,9 +1,17 @@
+const getEnvVar = (name: string): string => {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`Missing environment variable: ${name}`);
+  }
+  return value;
+};
+
 const env = {
-  databaseUrl: process.env.DATABASE_URL,
-  baseUrl: process.env.BETTER_AUTH_URL,
-  arcjetApiKey: process.env.ARCJET_API_KEY,
-  googleClientId: process.env.GOOGLE_CLIENT_ID,
-  googleSecret: process.env.GOOGLE_CLIENT_SECRET,
+  databaseUrl: getEnvVar('DATABASE_URL'),
+  baseUrl: getEnvVar('BETTER_AUTH_URL'),
+  arcjetApiKey: getEnvVar('ARCJET_API_KEY'),
+  googleClientId: getEnvVar('GOOGLE_CLIENT_ID'),
+  googleSecret: getEnvVar('GOOGLE_CLIENT_SECRET'),
 };
 
 export default env;

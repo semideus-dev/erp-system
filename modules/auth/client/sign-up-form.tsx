@@ -36,8 +36,8 @@ export default function SignUpForm() {
 
   const { isSubmitting } = form.formState;
 
-  function onSubmit(data: z.infer<typeof formSchema>) {
-    authClient.signUp.email(
+  async function onSubmit(data: z.infer<typeof formSchema>) {
+    await authClient.signUp.email(
       { ...data, callbackURL: "/dashboard" },
       {
         onError: (error) => {
@@ -54,12 +54,10 @@ export default function SignUpForm() {
   }
 
   async function handleGoogleAuth() {
-    await authClient.signIn.social(
-      {
-        provider: "google",
-        callbackURL: "/dashboard",
-      },
-    );
+    await authClient.signIn.social({
+      provider: "google",
+      callbackURL: "/dashboard",
+    });
   }
 
   return (
@@ -113,7 +111,11 @@ export default function SignUpForm() {
           className="w-full"
           size="lg"
         >
-          {isSubmitting ? <PiSpinnerGapLight /> : "Continue"}
+          {isSubmitting ? (
+            <PiSpinnerGapLight className="animate-spin" />
+          ) : (
+            "Continue"
+          )}
         </Button>
         <Button
           disabled={isSubmitting}
