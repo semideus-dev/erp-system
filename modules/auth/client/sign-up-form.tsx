@@ -15,7 +15,6 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import SocialAuthButtons from "./social-auth";
 import { FcGoogle } from "react-icons/fc";
 
 const formSchema = z.object({

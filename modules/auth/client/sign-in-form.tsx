@@ -16,7 +16,6 @@ import {
 
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
-import SocialAuthButtons from "./social-auth";
 import { FcGoogle } from "react-icons/fc";
 
 const formSchema = z.object({
