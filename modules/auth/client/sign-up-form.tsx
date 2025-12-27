@@ -2,7 +2,6 @@
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { FcGoogle } from "react-icons/fc";
 import { PiSpinnerGapLight } from "react-icons/pi";
 import {
   Field,
@@ -16,6 +15,8 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import SocialAuthButtons from "./social-auth";
+import { FcGoogle } from "react-icons/fc";
 
 const formSchema = z.object({
   name: z.string().min(3, "Full Name must be at least 3 characters."),
@@ -49,6 +50,15 @@ export default function SignUpForm() {
           toast.success("Account created successfully!");
           router.push("/dashboard");
         },
+      },
+    );
+  }
+
+  async function handleGoogleAuth() {
+    await authClient.signIn.social(
+      {
+        provider: "google",
+        callbackURL: "/dashboard",
       },
     );
   }
@@ -110,7 +120,9 @@ export default function SignUpForm() {
           disabled={isSubmitting}
           variant="outline"
           className="w-full"
+          type="button"
           size="lg"
+          onClick={handleGoogleAuth}
         >
           <FcGoogle />
           <span>Continue with Google</span>

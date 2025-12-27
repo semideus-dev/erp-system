@@ -1,20 +1,23 @@
 "use client";
-import { Controller, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { FcGoogle } from "react-icons/fc";
+import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { PasswordInput } from "@/components/ui/password-input";
+import { PiSpinnerGapLight } from "react-icons/pi";
+import { Controller, useForm } from "react-hook-form";
 import {
   Field,
   FieldLabel,
   FieldError,
   FieldGroup,
 } from "@/components/ui/field";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { PasswordInput } from "@/components/ui/password-input";
+
 import { authClient } from "@/lib/auth-client";
-import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import SocialAuthButtons from "./social-auth";
+import { FcGoogle } from "react-icons/fc";
 
 const formSchema = z.object({
   email: z.email(),
@@ -31,6 +34,8 @@ export default function SignInForm() {
     },
   });
 
+  const { isSubmitting } = form.formState;
+
   function onSubmit(data: z.infer<typeof formSchema>) {
     authClient.signIn.email(
       { ...data, callbackURL: "/dashboard" },
@@ -42,6 +47,27 @@ export default function SignInForm() {
         },
         onSuccess: () => {
           toast.success("Welcome back!");
+          router.push("/dashboard");
+        },
+      },
+    );
+  }
+
+  async function handleGoogleAuth() {
+    await authClient.signIn.social(
+      {
+        provider: "google",
+        callbackURL: "/dashboard",
+      },
+      {
+        onError: (error) => {
+          toast.error(
+            error.error.message ||
+              "Google authentication is unavailable right now.",
+          );
+        },
+        onSuccess: () => {
+          toast.success("Google authentication successful!");
           router.push("/dashboard");
         },
       },
@@ -84,10 +110,22 @@ export default function SignInForm() {
         />
       </FieldGroup>
       <div className="flex flex-col items-center gap-4 py-4">
-        <Button type="submit" className="w-full" size="lg">
-          Continue
+        <Button
+          disabled={isSubmitting}
+          type="submit"
+          className="w-full"
+          size="lg"
+        >
+          {isSubmitting ? <PiSpinnerGapLight /> : "Continue"}
         </Button>
-        <Button variant="outline" className="w-full" size="lg">
+        <Button
+          disabled={isSubmitting}
+          variant="outline"
+          className="w-full"
+          type="button"
+          size="lg"
+          onClick={handleGoogleAuth}
+        >
           <FcGoogle />
           <span>Continue with Google</span>
         </Button>
