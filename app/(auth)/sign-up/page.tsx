@@ -1,10 +1,20 @@
-import AppHeader from "@/components/app-header";
-import { heading } from "@/components/providers/font-provider";
+"use client";
 import { cn } from "@/lib/utils";
-import SignUpForm from "@/modules/auth/client/sign-up-form";
+import { heading } from "@/components/providers/font-provider";
+import { useRouter } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
+import { useEffect } from "react";
 import Link from "next/link";
+import AppHeader from "@/components/app-header";
+import SignUpForm from "@/modules/auth/client/sign-up-form";
 
 export default function SignUpPage() {
+  const router = useRouter();
+  useEffect(() => {
+    authClient.getSession().then((session) => {
+      if (session.data != null) router.push("/dashboard");
+    });
+  }, [router]);
   return (
     <div className="flex flex-col items-center justify-between w-full h-full py-4">
       <AppHeader />
