@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 
 import { primary } from "@/components/providers/font-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
   title: "Prometheus",
@@ -17,7 +18,14 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={primary.className}>
-        <ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange>{children}</ThemeProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          disableTransitionOnChange
+        >
+          {children}
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );

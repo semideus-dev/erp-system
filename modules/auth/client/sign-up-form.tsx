@@ -3,6 +3,7 @@ import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { FcGoogle } from "react-icons/fc";
+import { PiSpinnerGapLight } from "react-icons/pi";
 import {
   Field,
   FieldLabel,
@@ -12,24 +13,44 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
+import { authClient } from "@/lib/auth-client";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
-  username: z.string().min(3, "Username must be at least 3 characters."),
+  name: z.string().min(3, "Full Name must be at least 3 characters."),
   email: z.email(),
-  password: z.string().min(6, "Password must be at least 6 characters."),
+  password: z.string().min(8, "Password must be at least 8 characters."),
 });
 
 export default function SignUpForm() {
+  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      name: "",
       email: "",
       password: "",
     },
   });
 
+  const { isSubmitting } = form.formState;
+
   function onSubmit(data: z.infer<typeof formSchema>) {
-    console.log(data);
+    authClient.signUp.email(
+      { ...data, callbackURL: "/dashboard" },
+      {
+        onError: (error) => {
+          toast.error(
+            error.error.message || "Unable to sign up at this moment.",
+          );
+        },
+        onSuccess: () => {
+          toast.success("Account created successfully!");
+          router.push("/dashboard");
+        },
+      },
+    );
   }
 
   return (
@@ -39,16 +60,12 @@ export default function SignUpForm() {
     >
       <FieldGroup>
         <Controller
-          name="username"
+          name="name"
           control={form.control}
           render={({ field, fieldState }) => (
             <Field>
-              <FieldLabel htmlFor="username">Username</FieldLabel>
-              <Input
-                {...field}
-                id="username"
-                aria-invalid={fieldState.invalid}
-              />
+              <FieldLabel htmlFor="name">Full Name</FieldLabel>
+              <Input {...field} id="name" aria-invalid={fieldState.invalid} />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
           )}
@@ -81,10 +98,20 @@ export default function SignUpForm() {
         />
       </FieldGroup>
       <div className="flex flex-col items-center gap-4 py-4">
-        <Button type="submit" className="w-full" size="lg">
-          Continue
+        <Button
+          disabled={isSubmitting}
+          type="submit"
+          className="w-full"
+          size="lg"
+        >
+          {isSubmitting ? <PiSpinnerGapLight /> : "Continue"}
         </Button>
-        <Button variant="outline" className="w-full" size="lg">
+        <Button
+          disabled={isSubmitting}
+          variant="outline"
+          className="w-full"
+          size="lg"
+        >
           <FcGoogle />
           <span>Continue with Google</span>
         </Button>

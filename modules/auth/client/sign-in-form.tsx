@@ -12,6 +12,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
+import { authClient } from "@/lib/auth-client";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   email: z.email(),
@@ -19,6 +22,7 @@ const formSchema = z.object({
 });
 
 export default function SignInForm() {
+  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -28,7 +32,20 @@ export default function SignInForm() {
   });
 
   function onSubmit(data: z.infer<typeof formSchema>) {
-    console.log(data);
+    authClient.signIn.email(
+      { ...data, callbackURL: "/dashboard" },
+      {
+        onError: (error) => {
+          toast.error(
+            error.error.message || "Unable to sign in at this moment.",
+          );
+        },
+        onSuccess: () => {
+          toast.success("Welcome back!");
+          router.push("/dashboard");
+        },
+      },
+    );
   }
 
   return (
