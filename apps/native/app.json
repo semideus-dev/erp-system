@@ -1,0 +1,17 @@
+{
+  "expo": {
+    "scheme": "erp-system",
+    "userInterfaceStyle": "automatic",
+    "orientation": "default",
+    "web": {
+      "bundler": "metro"
+    },
+    "name": "erp-system",
+    "slug": "erp-system",
+    "plugins": ["expo-font"],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}

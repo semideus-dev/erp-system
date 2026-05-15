@@ -1,0 +1,25 @@
+{
+  "name": "@erp-system/auth",
+  "type": "module",
+  "exports": {
+    ".": {
+      "default": "./src/index.ts"
+    },
+    "./*": {
+      "default": "./src/*.ts"
+    }
+  },
+  "scripts": {},
+  "dependencies": {
+    "@better-auth/expo": "catalog:",
+    "@erp-system/db": "workspace:*",
+    "@erp-system/env": "workspace:*",
+    "better-auth": "catalog:",
+    "dotenv": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@erp-system/config": "workspace:*",
+    "typescript": "^6"
+  }
+}

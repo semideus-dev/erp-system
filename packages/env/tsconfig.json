@@ -1,0 +1,6 @@
+{
+  "extends": "@erp-system/config/tsconfig.base.json",
+  "compilerOptions": {
+    "strictNullChecks": true
+  }
+}
