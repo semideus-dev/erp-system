@@ -24,6 +24,13 @@ const signUpSchema = z.object({
     .email("Enter a valid email address"),
 });
 
+/**
+ * Extracts a string error message from an unknown value.
+ *
+ * Handles strings, arrays (checked recursively), and objects with a `message` property.
+ *
+ * @returns The error message string if found; `null` otherwise.
+ */
 function getErrorMessage(error: unknown): string | null {
   if (!error) {
     return null;
@@ -53,6 +60,9 @@ function getErrorMessage(error: unknown): string | null {
   return null;
 }
 
+/**
+ * Renders a sign-up form that sends a magic link to the provided email address.
+ */
 export function SignUp() {
   const emailInputRef = useRef<TextInput>(null);
   const { toast } = useToast();

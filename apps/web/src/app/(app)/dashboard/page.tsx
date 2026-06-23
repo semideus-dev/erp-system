@@ -5,6 +5,11 @@ import { authClient } from "@/lib/auth-client";
 
 import Dashboard from "./dashboard";
 
+/**
+ * Server-rendered page that validates user authentication and onboarding status, then displays the dashboard.
+ *
+ * Redirects to the home page for unauthenticated users and to the onboarding page for users whose onboarding is incomplete. Displays a personalized dashboard for authenticated, onboarded users.
+ */
 export default async function DashboardPage() {
   const session = await authClient.getSession({
     fetchOptions: {

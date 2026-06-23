@@ -23,6 +23,11 @@ interface BorderGlowProps {
   disableCursorFollow?: boolean;
 }
 
+/**
+ * Extracts hue, saturation, and lightness values from an HSL color string.
+ *
+ * @returns An object with numeric `h`, `s`, and `l` properties. Defaults to `{ h: 40, s: 80, l: 80 }` if parsing fails.
+ */
 function parseHSL(hslStr: string): { h: number; s: number; l: number } {
   const match = hslStr.match(/([\d.]+)\s*([\d.]+)%?\s*([\d.]+)%?/);
   if (!match) {
@@ -35,6 +40,15 @@ function parseHSL(hslStr: string): { h: number; s: number; l: number } {
   };
 }
 
+/**
+ * Creates a multi-layered box-shadow CSS value for a glow effect.
+ *
+ * Parses the HSL color string, scales shadow opacity by the intensity multiplier (capped at 100), and constructs a series of inset and outset shadow layers.
+ *
+ * @param glowColor - An HSL color string
+ * @param intensity - A multiplier for shadow opacity
+ * @returns A comma-separated box-shadow CSS value with multiple shadow layers
+ */
 function buildBoxShadow(glowColor: string, intensity: number): string {
   const { h, s, l } = parseHSL(glowColor);
   const base = `${h}deg ${s}% ${l}%`;
@@ -61,9 +75,21 @@ function buildBoxShadow(glowColor: string, intensity: number): string {
     .join(", ");
 }
 
+/**
+ * Applies cubic easing with fast start and slow finish.
+ *
+ * @param x - The normalized progress value between 0 and 1.
+ * @returns The eased value.
+ */
 function easeOutCubic(x: number) {
   return 1 - (1 - x) ** 3;
 }
+/**
+ * Applies cubic ease-in timing to a normalized time value.
+ *
+ * @param x - A normalized time value, typically between 0 and 1
+ * @returns The eased value
+ */
 function easeInCubic(x: number) {
   return x * x * x;
 }
@@ -78,6 +104,13 @@ interface AnimateOpts {
   start?: number;
 }
 
+/**
+ * Animates a numeric value from start to end over a specified duration, invoking callbacks at each frame and on completion.
+ *
+ * @param ease - Easing function to apply to animation progress (default: `easeOutCubic`)
+ * @param onUpdate - Callback invoked with the interpolated value at each animation frame
+ * @param onEnd - Optional callback invoked when the animation completes
+ */
 function animateValue({
   start = 0,
   end = 100,
@@ -112,6 +145,12 @@ const GRADIENT_POSITIONS = [
 ];
 const COLOR_MAP = [0, 1, 2, 0, 1, 2, 1];
 
+/**
+ * Creates CSS gradient strings for a mesh gradient effect.
+ *
+ * @param colors - Available colors to use for gradient layers
+ * @returns An array of 8 CSS gradient strings (7 radial gradients and 1 linear gradient)
+ */
 function buildMeshGradients(colors: string[]): string[] {
   const gradients: string[] = [];
   for (let i = 0; i < 7; i++) {

@@ -1,5 +1,8 @@
 import Header from "@/components/header";
 
+/**
+ * Renders the application layout with a header at the top and main content area below.
+ */
 export default function AppLayout({
   children,
 }: Readonly<{
