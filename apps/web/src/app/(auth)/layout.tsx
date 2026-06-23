@@ -1,3 +1,6 @@
+/**
+ * Provides a centered layout wrapper for authentication pages.
+ */
 export default function AuthLayout({
   children,
 }: Readonly<{

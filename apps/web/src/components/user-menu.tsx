@@ -14,6 +14,11 @@ import { useRouter } from "next/navigation";
 
 import { authClient } from "@/lib/auth-client";
 
+/**
+ * Renders an authentication-aware user menu component.
+ *
+ * Displays a skeleton while the session is loading. When unauthenticated, shows a Sign In button. When authenticated, displays a dropdown menu containing the user's name or email and a Sign Out option.
+ */
 export default function UserMenu() {
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();

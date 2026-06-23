@@ -14,6 +14,9 @@ import { authClient } from "@/lib/auth-client";
 
 import Loader from "./loader";
 
+/**
+ * Renders an account creation form with Google OAuth and email magic-link authentication.
+ */
 export default function SignUpForm() {
   const { isPending } = authClient.useSession();
   const lastMethod = authClient.getLastUsedLoginMethod();

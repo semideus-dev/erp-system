@@ -2,6 +2,9 @@ import { Input as InputPrimitive } from "@base-ui/react/input";
 import { cn } from "@erp-system/ui/lib/utils";
 import type * as React from "react";
 
+/**
+ * Renders a styled HTML input element with design system styling.
+ */
 function Input({ className, type, ...props }: React.ComponentProps<"input">) {
   return (
     <InputPrimitive

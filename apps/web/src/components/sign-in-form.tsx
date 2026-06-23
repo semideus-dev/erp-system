@@ -14,6 +14,12 @@ import { authClient } from "@/lib/auth-client";
 
 import Loader from "./loader";
 
+/**
+ * A sign-in form supporting Google OAuth and email/password authentication.
+ *
+ * Routes to the dashboard upon successful sign-in and indicates which
+ * authentication method was last used.
+ */
 export default function SignInForm() {
   const router = useRouter();
   const { isPending } = authClient.useSession();

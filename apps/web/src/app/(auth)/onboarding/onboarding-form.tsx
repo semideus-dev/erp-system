@@ -30,10 +30,23 @@ type User = typeof authClient.$Infer.Session.user;
 
 const WHITESPACE_REGEX = /\s+/;
 
+/**
+ * Generates a DiceBear avatar SVG URL from the provided seed.
+ *
+ * @param seed - The unique identifier for avatar generation
+ * @returns The URL to the DiceBear avatar SVG endpoint
+ */
 function createAvatarUrl(seed: string) {
   return `https://api.dicebear.com/9.x/croodles-neutral/svg?seed=${encodeURIComponent(seed)}`;
 }
 
+/**
+ * Splits a name into first and last name components.
+ *
+ * If the name is missing or contains an "@" symbol, both components are empty strings. Otherwise, the first word becomes the first name and remaining words form the last name.
+ *
+ * @returns An object with `firstName` and `lastName` string properties.
+ */
 function splitName(name: string | null | undefined) {
   if (!name || name.includes("@")) {
     return { firstName: "", lastName: "" };
@@ -49,6 +62,11 @@ function splitName(name: string | null | undefined) {
   };
 }
 
+/**
+ * Determines an avatar seed by selecting the first non-empty value from a priority list.
+ *
+ * @returns A non-empty string representing the avatar seed.
+ */
 function getAvatarSeed(
   firstName: string,
   fallbackFirstName: string,
@@ -57,6 +75,15 @@ function getAvatarSeed(
   return firstName.trim() || fallbackFirstName || user.email || user.id;
 }
 
+/**
+ * Collects and validates user profile information during onboarding.
+ *
+ * Renders input fields for name, phone number, age, and gender, with an optional
+ * password field determined by authentication requirements. Displays a dynamic avatar
+ * preview and submits completed profiles to the onboarding endpoint.
+ *
+ * @param user - The authenticated user object used to initialize form values.
+ */
 export default function OnboardingForm({ user }: { user: User }) {
   const router = useRouter();
   const initialName = splitName(user.name);
