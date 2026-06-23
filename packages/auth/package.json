@@ -16,6 +16,7 @@
     "@erp-system/env": "workspace:*",
     "better-auth": "catalog:",
     "dotenv": "catalog:",
+    "resend": "^6.12.4",
     "zod": "catalog:"
   },
   "devDependencies": {

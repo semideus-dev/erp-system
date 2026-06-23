@@ -11,14 +11,16 @@
     "prefix": ""
   },
   "iconLibrary": "lucide",
+  "menuColor": "default",
+  "menuAccent": "subtle",
   "aliases": {
     "components": "@erp-system/ui/components",
     "utils": "@erp-system/ui/lib/utils",
-    "hooks": "@erp-system/ui/hooks",
+    "ui": "@erp-system/ui/components",
     "lib": "@erp-system/ui/lib",
-    "ui": "@erp-system/ui/components"
+    "hooks": "@erp-system/ui/hooks"
   },
-  "menuColor": "default",
-  "menuAccent": "subtle",
-  "registries": {}
+  "registries": {
+    "@react-bits": "https://reactbits.dev/r/{name}.json"
+  }
 }

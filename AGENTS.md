@@ -1,126 +1,61 @@
-# Ultracite Code Standards
+# Repository Instructions
 
-This project uses **Ultracite**, a zero-config preset that enforces strict code quality standards through automated formatting and linting.
+## Commands
 
-## Quick Reference
+- Use Bun only: root `packageManager` is `bun@1.2.18`, lockfile is `bun.lock`.
+- Install with `bun install`; `bun run dev` starts app dev servers plus Drizzle Studio, but not Docker/Postgres.
+- Focus dev servers with `bun run dev:web`, `bun run dev:server`, or `bun run dev:native`.
+- Build all packages with `bun run build`; typecheck with `bun run check-types`.
+- Lint/format through Ultracite: `bun run check` and `bun run fix`.
+- There is no configured test runner or `test` script; do not invent `bun test` as a repo verification step.
 
-- **Format code**: `bun x ultracite fix`
-- **Check for issues**: `bun x ultracite check`
-- **Diagnose setup**: `bun x ultracite doctor`
+## Monorepo Shape
 
-Biome (the underlying engine) provides robust linting and formatting. Most issues are automatically fixable.
+- Apps live in `apps/*`: `web` is Next.js on port 3001, `server` is Elysia/Bun on port 3000, `native` is Expo Router.
+- Packages live in `packages/*`: `@erp-system/db`, `@erp-system/auth`, `@erp-system/env`, `@erp-system/ui`, and shared TS config in `@erp-system/config`.
+- Turbo filters use package names from manifests, for example `turbo -F web dev`, `turbo -F server dev`, and `turbo -F @erp-system/db db:push`.
+- Workspace exports point directly at TypeScript source files; avoid assuming built package artifacts exist except `apps/server/dist` after `bun run build`.
 
----
+## Database And Env
 
-## Core Principles
+- Drizzle config is in `packages/db/drizzle.config.ts` and loads env from `../../apps/server/.env`, not a root `.env`.
+- Server env schema requires `DATABASE_URL`, `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, `CORS_ORIGIN`, and optional `NODE_ENV` in `packages/env/src/server.ts`.
+- Web env uses `NEXT_PUBLIC_SERVER_URL`; native env uses `EXPO_PUBLIC_SERVER_URL`.
+- Local Postgres is defined by `packages/db/docker-compose.yml`; root shortcuts are `bun run db:start`, `db:stop`, `db:down`, `db:push`, `db:generate`, `db:migrate`, and `db:studio`.
+- Schema entrypoint is `packages/db/src/schema/index.ts`; add new schema exports there so `createDb()` includes them.
 
-Write code that is **accessible, performant, type-safe, and maintainable**. Focus on clarity and explicit intent over brevity.
+## Entrypoints And Integration
 
-### Type Safety & Explicitness
+- Server entrypoint is `apps/server/src/index.ts`; it wires CORS from `env.CORS_ORIGIN`, Better Auth at `/api/auth/*`, and `GET /` health check.
+- Auth lives in `packages/auth/src/index.ts`; it uses Better Auth with Drizzle and trusted origins for web plus Expo deep links in development.
+- Web imports env validation in `apps/web/next.config.ts`; Next has `typedRoutes` and `reactCompiler` enabled.
+- Native uses Expo Router via `apps/native/app/*`; `app.json` enables typed routes and React Compiler.
+- Native Metro config wraps Expo Metro with Reanimated and Uniwind; Uniwind CSS entry is `apps/native/global.css`.
 
-- Use explicit types for function parameters and return values when they enhance clarity
-- Prefer `unknown` over `any` when the type is genuinely unknown
-- Use const assertions (`as const`) for immutable values and literal types
-- Leverage TypeScript's type narrowing instead of type assertions
-- Use meaningful variable names instead of magic numbers - extract constants with descriptive names
+## UI And Styling
 
-### Modern JavaScript/TypeScript
+- Shared web UI primitives live in `packages/ui/src/components` and are imported as `@erp-system/ui/components/...`.
+- Shared design tokens/global CSS live in `packages/ui/src/styles/globals.css`; app-specific shadcn config is split between `packages/ui/components.json` and `apps/web/components.json`.
+- To add shared shadcn primitives, run from the repo root with `-c packages/ui`; add app-only blocks from `apps/web`.
 
-- Use arrow functions for callbacks and short functions
-- Prefer `for...of` loops over `.forEach()` and indexed `for` loops
-- Use optional chaining (`?.`) and nullish coalescing (`??`) for safer property access
-- Prefer template literals over string concatenation
-- Use destructuring for object and array assignments
-- Use `const` by default, `let` only when reassignment is needed, never `var`
+## Code Standards
 
-### Async & Promises
+- Biome extends `ultracite/biome/core`, `ultracite/biome/next`, and `ultracite/biome/react`; prefer `bun run fix` before final verification.
+- Shared TS config is strict with `noUncheckedIndexedAccess`, `noUnusedLocals`, `noUnusedParameters`, `verbatimModuleSyntax`, and Bun types.
+- React Compiler is enabled for web and native; do not add `useMemo`/`useCallback` only for routine render optimization unless existing code or a measured issue requires it.
 
-- Always `await` promises in async functions - don't forget to use the return value
-- Use `async/await` syntax instead of promise chains for better readability
-- Handle errors appropriately in async code with try-catch blocks
-- Don't use async functions as Promise executors
+# AI Context Sources
 
-### React & JSX
+Reference documentation is stored in `/ai-context`.
 
-- Use function components over class components
-- Call hooks at the top level only, never conditionally
-- Specify all dependencies in hook dependency arrays correctly
-- Use the `key` prop for elements in iterables (prefer unique IDs over array indices)
-- Nest children between opening and closing tags instead of passing as props
-- Don't define components inside other components
-- Use semantic HTML and ARIA attributes for accessibility:
-  - Provide meaningful alt text for images
-  - Use proper heading hierarchy
-  - Add labels for form inputs
-  - Include keyboard event handlers alongside mouse events
-  - Use semantic elements (`<button>`, `<nav>`, etc.) instead of divs with roles
+Important files:
+- better-auth.md: Better Auth integration details, including custom Drizzle adapter and session handling.
+- nextjs.md: Next.js-specific patterns and configurations, including typed routes and React Compiler usage.
 
-### Error Handling & Debugging
+Always consult better-auth.md when working with:
+- Better Auth
+- authentication flows
+- adapters/plugins
+- session handling
+- API usage
 
-- Remove `console.log`, `debugger`, and `alert` statements from production code
-- Throw `Error` objects with descriptive messages, not strings or other values
-- Use `try-catch` blocks meaningfully - don't catch errors just to rethrow them
-- Prefer early returns over nested conditionals for error cases
-
-### Code Organization
-
-- Keep functions focused and under reasonable cognitive complexity limits
-- Extract complex conditions into well-named boolean variables
-- Use early returns to reduce nesting
-- Prefer simple conditionals over nested ternary operators
-- Group related code together and separate concerns
-
-### Security
-
-- Add `rel="noopener"` when using `target="_blank"` on links
-- Avoid `dangerouslySetInnerHTML` unless absolutely necessary
-- Don't use `eval()` or assign directly to `document.cookie`
-- Validate and sanitize user input
-
-### Performance
-
-- Avoid spread syntax in accumulators within loops
-- Use top-level regex literals instead of creating them in loops
-- Prefer specific imports over namespace imports
-- Avoid barrel files (index files that re-export everything)
-- Use proper image components (e.g., Next.js `<Image>`) over `<img>` tags
-
-### Framework-Specific Guidance
-
-**Next.js:**
-
-- Use Next.js `<Image>` component for images
-- Use `next/head` or App Router metadata API for head elements
-- Use Server Components for async data fetching instead of async Client Components
-
-**React 19+:**
-
-- Use ref as a prop instead of `React.forwardRef`
-
-**Solid/Svelte/Vue/Qwik:**
-
-- Use `class` and `for` attributes (not `className` or `htmlFor`)
-
----
-
-## Testing
-
-- Write assertions inside `it()` or `test()` blocks
-- Avoid done callbacks in async tests - use async/await instead
-- Don't use `.only` or `.skip` in committed code
-- Keep test suites reasonably flat - avoid excessive `describe` nesting
-
-## When Biome Can't Help
-
-Biome's linter will catch most issues automatically. Focus your attention on:
-
-1. **Business logic correctness** - Biome can't validate your algorithms
-2. **Meaningful naming** - Use descriptive names for functions, variables, and types
-3. **Architecture decisions** - Component structure, data flow, and API design
-4. **Edge cases** - Handle boundary conditions and error states
-5. **User experience** - Accessibility, performance, and usability considerations
-6. **Documentation** - Add comments for complex logic, but prefer self-documenting code
-
----
-
-Most formatting and common issues are automatically fixed by Biome. Run `bun x ultracite fix` before committing to ensure compliance.

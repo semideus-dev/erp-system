@@ -21,7 +21,7 @@
   },
   "type": "module",
   "scripts": {
-    "dev": "turbo dev",
+    "dev": "turbo -F web -F server -F native -F @erp-system/db dev",
     "build": "turbo build",
     "check-types": "turbo check-types",
     "dev:native": "turbo -F native dev",

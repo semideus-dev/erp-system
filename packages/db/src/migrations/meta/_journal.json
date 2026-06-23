@@ -1,0 +1,34 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1781308800000,
+      "tag": "0000_add_user_phone_number",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1781308800001,
+      "tag": "0001_auth_onboarding_google",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1781308800002,
+      "tag": "0002_single_name_unique_phone",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1781457751748,
+      "tag": "0003_minor_the_professor",
+      "breakpoints": true
+    }
+  ]
+}
