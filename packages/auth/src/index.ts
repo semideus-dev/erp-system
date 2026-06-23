@@ -15,6 +15,14 @@ import { Resend } from "resend";
 
 const resend = new Resend(env.RESEND_API_KEY);
 
+/**
+ * Creates and returns a configured Better Auth instance.
+ *
+ * Configures authentication with Google OAuth, email/password sign-in, magic link sign-up,
+ * email verification, last login method tracking, and Expo support.
+ *
+ * @returns A configured Better Auth instance
+ */
 export function createAuth() {
   const db = createDb();
 

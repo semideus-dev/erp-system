@@ -8,6 +8,9 @@ import { ChevronDownIcon, CheckIcon, ChevronUpIcon } from "lucide-react"
 
 const Select = SelectPrimitive.Root
 
+/**
+ * A styled wrapper for grouping related select items.
+ */
 function SelectGroup({ className, ...props }: SelectPrimitive.Group.Props) {
   return (
     <SelectPrimitive.Group
@@ -18,6 +21,11 @@ function SelectGroup({ className, ...props }: SelectPrimitive.Group.Props) {
   )
 }
 
+/**
+ * Displays the selected value in a select component.
+ *
+ * @returns The rendered select value element.
+ */
 function SelectValue({ className, ...props }: SelectPrimitive.Value.Props) {
   return (
     <SelectPrimitive.Value
@@ -28,6 +36,9 @@ function SelectValue({ className, ...props }: SelectPrimitive.Value.Props) {
   )
 }
 
+/**
+ * Renders the trigger button for a select component.
+ */
 function SelectTrigger({
   className,
   size = "default",
@@ -56,6 +67,9 @@ function SelectTrigger({
   )
 }
 
+/**
+ * Renders the dropdown content of a select component with positioning, animations, and scroll controls.
+ */
 function SelectContent({
   className,
   children,
@@ -95,6 +109,9 @@ function SelectContent({
   )
 }
 
+/**
+ * A styled label component for select item groups.
+ */
 function SelectLabel({
   className,
   ...props
@@ -108,6 +125,9 @@ function SelectLabel({
   )
 }
 
+/**
+ * Renders a selectable option in a select dropdown, displaying a check icon when selected.
+ */
 function SelectItem({
   className,
   children,
@@ -136,6 +156,10 @@ function SelectItem({
   )
 }
 
+/**
+ * Renders a styled separator for select dropdown content.
+ */
+```
 function SelectSeparator({
   className,
   ...props
@@ -149,6 +173,9 @@ function SelectSeparator({
   )
 }
 
+/**
+ * Renders a button that scrolls the select list upward.
+ */
 function SelectScrollUpButton({
   className,
   ...props
@@ -168,6 +195,9 @@ function SelectScrollUpButton({
   )
 }
 
+/**
+ * Renders a scroll down button with a chevron icon for the select dropdown.
+ */
 function SelectScrollDownButton({
   className,
   ...props

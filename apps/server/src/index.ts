@@ -19,6 +19,12 @@ const onboardingSchema = z.object({
   password: z.string().min(8).optional(),
 });
 
+/**
+ * Determines if the user must set a password during onboarding.
+ *
+ * @param userId - The ID of the user
+ * @returns An object with `requiresPassword: true` if the user lacks both a Google account and an existing credential password, `false` otherwise.
+ */
 async function getOnboardingRequirements(userId: string) {
   const accounts = await db
     .select({ providerId: account.providerId, password: account.password })
