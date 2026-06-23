@@ -19,6 +19,8 @@ interface BorderGlowProps {
   glowColor?: string;
   glowIntensity?: number;
   glowRadius?: number;
+  showDefaultGlow?: boolean;
+  disableCursorFollow?: boolean;
 }
 
 function parseHSL(hslStr: string): { h: number; s: number; l: number } {
@@ -133,12 +135,14 @@ const BorderGlow: React.FC<BorderGlowProps> = ({
   glowIntensity = 1.0,
   coneSpread = 25,
   animated = false,
-  colors = ["#c084fc", "#f472b6", "#38bdf8"],
+  colors = ["#9333ea", "#a855f7", "#c084fc"],
   fillOpacity = 0.5,
+  showDefaultGlow = false,
+  disableCursorFollow = false,
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
-  const [cursorAngle, setCursorAngle] = useState(45);
+  const [cursorAngle, setCursorAngle] = useState(180);
   const [edgeProximity, setEdgeProximity] = useState(0);
   const [sweepActive, setSweepActive] = useState(false);
 
@@ -185,6 +189,7 @@ const BorderGlow: React.FC<BorderGlowProps> = ({
 
   const handlePointerMove = useCallback(
     (e: React.PointerEvent<HTMLDivElement>) => {
+      if (disableCursorFollow) return;
       const card = cardRef.current;
       if (!card) {
         return;
@@ -195,7 +200,7 @@ const BorderGlow: React.FC<BorderGlowProps> = ({
       setEdgeProximity(getEdgeProximity(card, x, y));
       setCursorAngle(getCursorAngle(card, x, y));
     },
-    [getEdgeProximity, getCursorAngle]
+    [getEdgeProximity, getCursorAngle, disableCursorFollow]
   );
 
   useEffect(() => {
@@ -238,17 +243,18 @@ const BorderGlow: React.FC<BorderGlowProps> = ({
   }, [animated]);
 
   const colorSensitivity = edgeSensitivity + 20;
-  const isVisible = isHovered || sweepActive;
+  const isVisible = isHovered || sweepActive || showDefaultGlow;
+  
   const borderOpacity = isVisible
     ? Math.max(
         0,
-        (edgeProximity * 100 - colorSensitivity) / (100 - colorSensitivity)
+        (100 - colorSensitivity) / (100 - colorSensitivity)
       )
     : 0;
   const glowOpacity = isVisible
     ? Math.max(
         0,
-        (edgeProximity * 100 - edgeSensitivity) / (100 - edgeSensitivity)
+        (100 - edgeSensitivity) / (100 - edgeSensitivity)
       )
     : 0;
 

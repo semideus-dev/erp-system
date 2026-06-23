@@ -3,12 +3,12 @@
 import { env } from "@erp-system/env/web";
 import { Button } from "@erp-system/ui/components/button";
 import {
-  Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@erp-system/ui/components/card";
+import { GlowCard } from "@erp-system/ui/components/glow-card";
 import { Input } from "@erp-system/ui/components/input";
 import {
   Select,
@@ -180,7 +180,7 @@ export default function OnboardingForm({ user }: { user: User }) {
 
   return (
     <div className="w-full max-w-lg">
-      <Card className="rounded-2xl bg-transparent">
+      <GlowCard className="rounded-2xl bg-transparent">
         <CardHeader className="flex flex-col items-center justify-center text-center">
           <form.Subscribe selector={(state) => state.values.firstName}>
             {(firstName) => {
@@ -200,7 +200,7 @@ export default function OnboardingForm({ user }: { user: User }) {
               );
             }}
           </form.Subscribe>
-          <CardTitle className="text-2xl">Complete your profile</CardTitle>
+          <CardTitle className="mb-4 text-2xl">Complete your profile</CardTitle>
           <CardDescription />
         </CardHeader>
         <CardContent>
@@ -375,7 +375,7 @@ export default function OnboardingForm({ user }: { user: User }) {
             </form.Subscribe>
           </form>
         </CardContent>
-      </Card>
+      </GlowCard>
     </div>
   );
 }
