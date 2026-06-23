@@ -1,1 +1,33 @@
 @import "@erp-system/ui/globals.css";
+
+.PhoneInput {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  width: 100%;
+  min-height: 2rem;
+  padding: 0 0.625rem;
+  background: transparent;
+  border: 1px solid var(--input);
+}
+
+.PhoneInput:focus-within {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--ring) 50%, transparent);
+}
+
+.PhoneInputCountry {
+  margin: 0;
+}
+
+.PhoneInputInput {
+  width: 100%;
+  min-width: 0;
+  font-size: 0.75rem;
+  outline: none;
+  background: transparent;
+}
+
+.PhoneInputInput::placeholder {
+  color: var(--color-muted-foreground);
+}

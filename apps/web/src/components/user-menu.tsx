@@ -17,6 +17,7 @@ import { authClient } from "@/lib/auth-client";
 export default function UserMenu() {
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
+  const displayName = session?.user.name || session?.user.email || "Account";
 
   if (isPending) {
     return <Skeleton className="h-9 w-24" />;
@@ -24,7 +25,7 @@ export default function UserMenu() {
 
   if (!session) {
     return (
-      <Link href="/login">
+      <Link href="/">
         <Button variant="outline">Sign In</Button>
       </Link>
     );
@@ -33,7 +34,7 @@ export default function UserMenu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger render={<Button variant="outline" />}>
-        {session.user.name}
+        {displayName}
       </DropdownMenuTrigger>
       <DropdownMenuContent className="bg-card">
         <DropdownMenuGroup>
@@ -41,7 +42,6 @@ export default function UserMenu() {
           <DropdownMenuSeparator />
           <DropdownMenuItem>{session.user.email}</DropdownMenuItem>
           <DropdownMenuItem
-            variant="destructive"
             onClick={() => {
               authClient.signOut({
                 fetchOptions: {
@@ -51,6 +51,7 @@ export default function UserMenu() {
                 },
               });
             }}
+            variant="destructive"
           >
             Sign Out
           </DropdownMenuItem>

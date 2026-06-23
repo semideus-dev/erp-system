@@ -1,8 +1,12 @@
-import { Button } from "@erp-system/ui/components/button";
+"use client";
+
+import { env } from "@erp-system/env/web";
+import { Button, buttonVariants } from "@erp-system/ui/components/button";
 import { Input } from "@erp-system/ui/components/input";
-import { Label } from "@erp-system/ui/components/label";
 import { useForm } from "@tanstack/react-form";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { SiGoogle } from "react-icons/si";
+
 import { toast } from "sonner";
 import z from "zod";
 
@@ -10,39 +14,46 @@ import { authClient } from "@/lib/auth-client";
 
 import Loader from "./loader";
 
-export default function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () => void }) {
-  const router = useRouter();
+export default function SignUpForm() {
   const { isPending } = authClient.useSession();
+  const lastMethod = authClient.getLastUsedLoginMethod();
+
+  const signInWithGoogle = async () => {
+    const { error } = await authClient.signIn.social({
+      provider: "google",
+      callbackURL: `${env.NEXT_PUBLIC_APP_URL}/onboarding`,
+    });
+
+    if (error) {
+      toast.error(error.message || "Unable to continue with Google");
+    }
+  };
 
   const form = useForm({
     defaultValues: {
       email: "",
-      password: "",
-      name: "",
     },
     onSubmit: async ({ value }) => {
-      await authClient.signUp.email(
+      await authClient.signIn.magicLink(
         {
+          name: value.email,
           email: value.email,
-          password: value.password,
-          name: value.name,
+          callbackURL: `${env.NEXT_PUBLIC_APP_URL}/onboarding`,
+          newUserCallbackURL: `${env.NEXT_PUBLIC_APP_URL}/onboarding`,
         },
         {
           onSuccess: () => {
-            router.push("/dashboard");
-            toast.success("Sign up successful");
+            toast.success("Magic link sent. Check your inbox.");
           },
           onError: (error) => {
             toast.error(error.error.message || error.error.statusText);
           },
-        },
+        }
       );
     },
     validators: {
       onSubmit: z.object({
-        name: z.string().min(2, "Name must be at least 2 characters"),
         email: z.email("Invalid email address"),
-        password: z.string().min(8, "Password must be at least 8 characters"),
       }),
     },
   });
@@ -52,77 +63,57 @@ export default function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () 
   }
 
   return (
-    <div className="mx-auto w-full mt-10 max-w-md p-6">
-      <h1 className="mb-6 text-center text-3xl font-bold">Create Account</h1>
+    <div className="mx-auto mt-10 w-full max-w-md p-6">
+      <div className="my-6 flex w-full flex-col items-center gap-2">
+        <h1 className="text-center font-bold text-3xl">Create Account</h1>
+        <p className="text-center font-medium text-muted-foreground text-sm leading-snug">
+          Stay connected with everything happening on campus.{" "}
+        </p>
+      </div>
+
+      <Button
+        className="w-full"
+        onClick={signInWithGoogle}
+        type="button"
+        variant="outline"
+      >
+        <SiGoogle className="mr-2" />
+        Continue with Google
+        {lastMethod === "google" ? (
+          <span className="ml-2 text-muted-foreground text-xs">Last used</span>
+        ) : null}
+      </Button>
+
+      <div className="my-6 flex items-center gap-3 text-muted-foreground text-xs">
+        <div className="h-px flex-1 bg-border" />
+        Or
+        <div className="h-px flex-1 bg-border" />
+      </div>
 
       <form
+        className="space-y-4"
         onSubmit={(e) => {
           e.preventDefault();
           e.stopPropagation();
           form.handleSubmit();
         }}
-        className="space-y-4"
       >
-        <div>
-          <form.Field name="name">
-            {(field) => (
-              <div className="space-y-2">
-                <Label htmlFor={field.name}>Name</Label>
-                <Input
-                  id={field.name}
-                  name={field.name}
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                />
-                {field.state.meta.errors.map((error) => (
-                  <p key={error?.message} className="text-red-500">
-                    {error?.message}
-                  </p>
-                ))}
-              </div>
-            )}
-          </form.Field>
-        </div>
-
         <div>
           <form.Field name="email">
             {(field) => (
               <div className="space-y-2">
-                <Label htmlFor={field.name}>Email</Label>
                 <Input
+                  autoComplete="email"
                   id={field.name}
                   name={field.name}
+                  onBlur={field.handleBlur}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  placeholder="Email Address"
                   type="email"
                   value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
                 />
                 {field.state.meta.errors.map((error) => (
-                  <p key={error?.message} className="text-red-500">
-                    {error?.message}
-                  </p>
-                ))}
-              </div>
-            )}
-          </form.Field>
-        </div>
-
-        <div>
-          <form.Field name="password">
-            {(field) => (
-              <div className="space-y-2">
-                <Label htmlFor={field.name}>Password</Label>
-                <Input
-                  id={field.name}
-                  name={field.name}
-                  type="password"
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                />
-                {field.state.meta.errors.map((error) => (
-                  <p key={error?.message} className="text-red-500">
+                  <p className="text-red-500" key={error?.message}>
                     {error?.message}
                   </p>
                 ))}
@@ -132,24 +123,38 @@ export default function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () 
         </div>
 
         <form.Subscribe
-          selector={(state) => ({ canSubmit: state.canSubmit, isSubmitting: state.isSubmitting })}
+          selector={(state) => ({
+            canSubmit: state.canSubmit,
+            isSubmitting: state.isSubmitting,
+          })}
         >
           {({ canSubmit, isSubmitting }) => (
-            <Button type="submit" className="w-full" disabled={!canSubmit || isSubmitting}>
-              {isSubmitting ? "Submitting..." : "Sign Up"}
+            <Button
+              className="w-full"
+              disabled={!canSubmit || isSubmitting}
+              type="submit"
+            >
+              {isSubmitting ? "Sending..." : "Verify Email"}
+              {lastMethod === "email" ? (
+                <span className="ml-2 text-primary-foreground/75 text-xs">
+                  Last used
+                </span>
+              ) : null}
             </Button>
           )}
         </form.Subscribe>
       </form>
 
       <div className="mt-4 text-center">
-        <Button
-          variant="link"
-          onClick={onSwitchToSignIn}
-          className="text-indigo-600 hover:text-indigo-800"
+        <Link
+          className={buttonVariants({
+            variant: "link",
+            className: "text-indigo-600 hover:text-indigo-800",
+          })}
+          href="/"
         >
           Already have an account? Sign In
-        </Button>
+        </Link>
       </div>
     </div>
   );
